@@ -1,11 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from "axios"
 import Note from "./components/Note"
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
+const App = () => {
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState("")
   const [showAll, setShowAll] = useState(true)
 
+  const hook = () => {
+    console.log("effect")
+    axios
+    .get("http://localhost:3001/notes")
+    .then(response => {
+      console.log("promise fulfilled")
+      setNotes(response.data)
+    })
+  }
+  
+  useEffect(hook, [])
+    
   // if showAll = true, then notesToShow = notes, otherwise notesToShow is notes filtered to important only
   const notesToShow = showAll
     ? notes
