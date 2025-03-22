@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import bookService from "../services/phonebook"
 
-const PersonForm = ({persons, setPersons}) => {
+const PersonForm = ({ persons, setPersons, setMessage, setMessageType }) => {
     const [newName, setNewName] = useState("")
     const [newNumber, setNewNumber] = useState("")
   
@@ -19,6 +19,7 @@ const PersonForm = ({persons, setPersons}) => {
         name: newName,
         number: newNumber
       }
+      
       const exists = persons.some((person) => person.name === newPerson.name)
       
       if (exists) {
@@ -33,7 +34,20 @@ const PersonForm = ({persons, setPersons}) => {
           if (window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
             bookService.update({ ...existingPerson, number: newPerson.number })
               .then(updatedPerson => {
+                setMessageType("success")
+                setMessage(`The number for ${updatedPerson.name} has been updated!`)
+                setTimeout(() => {
+                  setMessage(null)
+                }, 5000)
                 setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
+              })
+              .catch(error => {
+                setMessageType("failure")
+                setMessage(`Information for ${newPerson.name} has already been removed from the server.`)
+                setTimeout(() => {
+                  setMessage(null)
+                }, 5000)
+                setPersons(persons.filter(person => person.name !== newPerson.name))
               })
           }
         }
@@ -41,6 +55,11 @@ const PersonForm = ({persons, setPersons}) => {
       } else {
         bookService.create(newPerson)
           .then(createdPerson => {
+            setMessageType("success")
+            setMessage(`${createdPerson.name} has been added!`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
             setPersons(persons.concat(createdPerson))
           })
       }
