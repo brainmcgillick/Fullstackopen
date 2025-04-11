@@ -1,7 +1,16 @@
 const express = require("express")
 const app = express()
 
+const requestLogger = (request, response, next) => {
+  console.log("Method:", request.method)
+  console.log("Path:", request.path)
+  console.log("Body:", request.body)
+  console.log("---")
+  next()
+}
+
 app.use(express.json())
+app.use(requestLogger)
 
 const generateId = () => {
   const maxID = notes.length > 0
@@ -69,6 +78,12 @@ app.post("/api/notes", (req, res) => {
     "important": body.important || false,
     "id": generateId()
   }
+
+  const unknownEndpoint = (req, res) => {
+    express.res.status(404).send({ error: "unknown endpoint" })
+  }
+
+  app.use(unknownEndpoint)
 
   notes = notes.concat(note)
   res.json(note)
