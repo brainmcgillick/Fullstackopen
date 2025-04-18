@@ -41,7 +41,7 @@ const App = () => {
     .getAll()
     .then(initialNotes => {
       setNotes(initialNotes)
-    }), []})
+    })}, [])
     
   // if showAll = true, then notesToShow = notes, otherwise notesToShow is notes filtered to important only
   const notesToShow = showAll
